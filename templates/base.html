@@ -1,0 +1,109 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Ticketing System By Rodrigo Alvarez v0.3</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      color-scheme: light;
+    }
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 2.4rem;
+      background: linear-gradient(180deg, #f5f7ff 0%, #f1f5f9 100%);
+      color: #0f172a;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      background: #111827;
+      color: #fff;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+    }
+    .nav-card {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.8rem;
+      justify-content: space-between;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 0.9rem 1.2rem;
+      box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+      margin-bottom: 2rem;
+    }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+    .nav-link {
+      text-decoration: none;
+      color: #1d4ed8;
+      font-weight: 600;
+      padding: 0.55rem 1.1rem;
+      border-radius: 999px;
+      background: #eef2ff;
+      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.15);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .nav-link:hover {
+      transform: translateY(-2px);
+      background: #e0e7ff;
+      box-shadow: 0 14px 26px rgba(37, 99, 235, 0.18);
+    }
+    .nav-link span {
+      font-size: 0.9rem;
+    }
+    main {
+      display: block;
+    }
+    @media (max-width: 640px) {
+      body {
+        margin: 1.2rem;
+      }
+      .nav-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.9rem;
+      }
+      .nav-links {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ticketing System By Rodrigo Alvarez</h1>
+    <span class="badge">v0.3</span>
+  </header>
+
+  <div class="nav-card">
+    <div style="font-weight:600; color:#475569;">Quick navigation</div>
+    <div class="nav-links">
+      <a class="nav-link" href="/"><span>🏠</span><span>Home</span></a>
+      <a class="nav-link" href="/tickets/"><span>📋</span><span>Tickets</span></a>
+      <a class="nav-link" href="/tickets/new/"><span>✏️</span><span>New Ticket</span></a>
+      <a class="nav-link" href="/dashboard/"><span>📊</span><span>Dashboard</span></a>
+      <a class="nav-link" href="/kb/"><span>📚</span><span>Knowledge Base</span></a>
+    </div>
+  </div>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

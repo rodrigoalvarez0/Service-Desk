@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block content %}
+  <style>
+    .dash-shell { display:flex; flex-direction:column; gap:1.8rem; }
+    .dash-header { display:flex; flex-direction:column; gap:.5rem; }
+    .dash-sub { color:#575757; max-width:48rem; }
+
+    .kpi-grid { display:grid; gap:1rem; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); }
+    .kpi-card { background:linear-gradient(135deg, #1d4ed8, #2563eb); color:#fff; padding:1.15rem; border-radius:16px; box-shadow:0 14px 30px rgba(29,78,216,.25); display:flex; flex-direction:column; gap:.4rem; }
+    .kpi-card.muted { background:#f1f5f9; color:#0f172a; box-shadow:none; }
+    .kpi-label { font-size:.9rem; font-weight:500; opacity:.9; letter-spacing:.04em; text-transform:uppercase; }
+    .kpi-value { font-size:2.1rem; font-weight:700; line-height:1; }
+
+    .sla-panel { background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:1.4rem; box-shadow:0 10px 24px rgba(15,23,42,.08); display:flex; flex-direction:column; gap:.9rem; }
+    .sla-bar { height:12px; border-radius:999px; background:#e5e7eb; overflow:hidden; }
+    .sla-fill { height:100%; background:linear-gradient(90deg, #16a34a, #22c55e); }
+    .sla-details { display:flex; gap:2rem; flex-wrap:wrap; font-size:.9rem; color:#475569; }
+
+    .panel { background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:1.2rem 1.4rem; box-shadow:0 8px 20px rgba(15,23,42,.05); }
+    .panel h3 { margin:0 0 .8rem; font-size:1.1rem; color:#111827; }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; }
+    thead { background:#f8fafc; text-transform:uppercase; font-size:.75rem; letter-spacing:.05em; }
+    th, td { padding:.65rem .75rem; border-bottom:1px solid #e5e7eb; text-align:left; }
+    tbody tr:last-child td { border-bottom:none; }
+    tbody tr:hover { background:#f1f5f9; }
+
+    @media (max-width:640px) {
+      .kpi-card { padding:1rem; }
+      .kpi-value { font-size:1.8rem; }
+    }
+  </style>
+
+  <div class="dash-shell">
+    <section class="dash-header">
+      <h1 style="margin:0;">Dashboard</h1>
+      <p class="dash-sub">
+        Quick snapshot of work in flight. Track ticket load, SLA performance, and where teams should focus next.
+      </p>
+    </section>
+
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-label">Total Tickets</span>
+        <span class="kpi-value">{{ total }}</span>
+        <span style="font-size:.85rem; opacity:.85;">All tickets captured in the system.</span>
+      </div>
+      <div class="kpi-card muted">
+        <span class="kpi-label">Open</span>
+        <span class="kpi-value">{{ open_count }}</span>
+        <span style="font-size:.85rem; color:#475569;">Awaiting resolution (not escalated).</span>
+      </div>
+      <div class="kpi-card muted">
+        <span class="kpi-label">Resolved</span>
+        <span class="kpi-value">{{ resolved_count }}</span>
+        <span style="font-size:.85rem; color:#475569;">Closed successfully.</span>
+      </div>
+      <div class="kpi-card muted">
+        <span class="kpi-label">Escalated</span>
+        <span class="kpi-value">{{ escalated_count }}</span>
+        <span style="font-size:.85rem; color:#475569;">Needing higher-tier attention.</span>
+      </div>
+    </section>
+
+    <section class="sla-panel">
+      <div>
+        <h2 style="margin:0 0 .2rem; font-size:1.25rem;">SLA Compliance</h2>
+        {% with rate=sla_rate|default_if_none:0 %}
+          <div class="sla-bar">
+            <div class="sla-fill" data-sla-fill data-rate="{{ rate }}"></div>
+          </div>
+          <div style="font-size:2rem; font-weight:700; color:#0f172a; line-height:1.1;">
+            {% if sla_rate is not None %}
+              {{ sla_rate }}%
+            {% else %}
+              &mdash;
+            {% endif %}
+          </div>
+        {% endwith %}
+      </div>
+      <div class="sla-details">
+        <span><strong>{{ with_sla_count }}</strong> tickets tracked against an SLA.</span>
+        <span><strong>{{ breached_count }}</strong> tickets currently breached.</span>
+        <span><strong>{{ escalated_count }}</strong> escalated due to breach or manual bump.</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>Status Breakdown</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Status</th><th>Count</th></tr>
+          </thead>
+          <tbody>
+            {% for row in by_status %}
+              <tr>
+                <td>{{ row.label }}</td>
+                <td>{{ row.count }}</td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="2" style="text-align:center; color:#6b7280;">No data yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>Priority Breakdown</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Priority</th><th>Count</th></tr>
+          </thead>
+          <tbody>
+            {% for row in by_priority %}
+              <tr>
+                <td>{{ row.label }}</td>
+                <td>{{ row.count }}</td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="2" style="text-align:center; color:#6b7280;">No data yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function() {
+      const fill = document.querySelector('[data-sla-fill]');
+      if (!fill) {
+        return;
+      }
+      const raw = parseFloat(fill.dataset.rate || '0');
+      const clamped = isNaN(raw) ? 0 : Math.min(Math.max(raw, 0), 100);
+      fill.style.width = clamped + '%';
+    })();
+  </script>
+{% endblock %}

@@ -1,0 +1,51 @@
+Ticketing System Commands
+=========================
+
+Environment Setup
+-----------------
+1. (Optional) create virtual environment
+   - Windows PowerShell:
+     python -m venv .venv
+
+   - macOS/Linux:
+     python3 -m venv .venv
+
+2. Activate virtual environment
+   - Windows PowerShell:
+     .\.venv\Scripts\Activate.ps1
+
+   - macOS/Linux:
+     source .venv/bin/activate
+
+Dependencies
+------------
+Install project requirements (after activating the venv):
+pip install -r requirements.txt
+
+Database
+--------
+Apply migrations:
+python manage.py migrate
+
+Create admin/superuser account:
+python manage.py createsuperuser
+
+Run the SLA check management command manually (optional):
+python manage.py check_sla
+
+Development Server
+------------------
+Start the Django dev server:
+python manage.py runserver
+
+Stop the server with Ctrl+C when finished.
+
+Testing
+-------
+Run the app's test suite:
+python manage.py test
+
+Static Code Tasks
+-----------------
+Collect static files for production builds (if needed):
+python manage.py collectstatic
