@@ -17,17 +17,18 @@ This project provides:
 - Dashboard: aggregated metrics and SLA overview.
 
 ## Quick start (development)
-1. Open PowerShell in the project folder:
-   cd "C:\Users\rigo7\OneDrive\Escritorio\IT PROJECTS\Service desk"
-2. Create and activate a virtual environment:
+1. FOrk and CLone the Repository to your desired directory:
+   git clone https://github.com/YOUR-USERNAME/service-desk.git
+   cd service-desk
+3. Create and activate a virtual environment:
    python -m venv .venv
    .venv\Scripts\Activate
-3. Install dependencies:
+4. Install dependencies:
    pip install -r requirements.txt
-4. Apply migrations and create a superuser:
+5. Apply migrations and create a superuser:
    python manage.py migrate
    python manage.py createsuperuser
-5. Run the development server:
+6. Run the development server:
    python manage.py runserver
 
 The admin site is available at: http://127.0.0.1:8000/admin/
