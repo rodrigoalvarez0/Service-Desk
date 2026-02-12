@@ -17,7 +17,7 @@ This project provides:
 - Dashboard: aggregated metrics and SLA overview.
 
 ## Quick start (development)
-1. FOrk and CLone the Repository to your desired directory:
+1. Fork and Clone the Repository to your desired directory:
    git clone https://github.com/YOUR-USERNAME/service-desk.git
    cd service-desk
 3. Create and activate a virtual environment:
